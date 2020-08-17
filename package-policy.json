@@ -1,0 +1,6 @@
+{
+    "@actions/core": "^1.2.3",
+    "@actions/github": "*",
+    "node-fetch": "2.6.0",
+    "@types/node-fetch": "*"
+}

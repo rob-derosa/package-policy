@@ -1,0 +1,26 @@
+name: 'Package Policy'
+description: 'Checks the package manifest (package.json, yarn.lock) for references to packages contained in a provided list'
+author: 'rob-derosa@github.com'
+branding:
+  icon: alert-triangle
+  color: red
+inputs:
+  policy:
+    required: true
+    description: 'Set to either `allow` or `prohibit`'
+  policy-url:
+    required: true
+    description: 'The url to a publicly available json file containing a list of allowed or prohibited packages'
+  fail-if-violations:
+    required: false
+    default: 'true'
+    description: 'True to set the status of the action to Failed if violations occur. Set to false to allow downstream actions to execute. Defaults to true'
+  github-token:
+    required: true
+    description: 'Your GitHub token to access the files in the commits tied to the push or puill request'
+outputs:
+  results:
+      description: 'A list of any packages breaking the provided policy rules'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

@@ -1,0 +1,18 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "args": ["prohibit", "https://gist.githubusercontent.com/rob-derosa/965f4d51e5eb006a928cffe176998923/raw/0c8857f2e17f6d21179e26d56f28f733aeaee5db/policy.json", "123123123", "[\".github/workflows/enforce-pacakge-policy.yml\",\"package.json\"]", "[]"],
+            "program": "${workspaceFolder}/lib/main.js"
+        }
+    ]
+}
