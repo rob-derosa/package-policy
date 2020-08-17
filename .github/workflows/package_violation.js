@@ -1,4 +1,12 @@
-module.exports = async (gh) => {
+module.exports = async (gh, context) => {
+
+  console.log("gh");
+  console.log(gh);
+
+  console.log();
+  console.log();
+  console.log("context");
+  console.log(context);
 
   let violations = gh.core.getInput("violations", {});
 
