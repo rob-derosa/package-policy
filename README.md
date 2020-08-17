@@ -5,7 +5,7 @@ This GitHub action allows you to provide a list of packages allowed or prohibite
 **Why enforce dependencies?**
 * internal security analysis by SecOps
 * licensing restrictions
-* internal centralization around standard libraries
+* centralization around standard libraries
 
 
 **Versions can be specified as:**
