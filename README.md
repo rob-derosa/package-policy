@@ -42,7 +42,7 @@ jobs:
           violations: ${{steps.package-policy.outputs.violations}}
           script: |
             const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/package_violation.js`)
-            await script({github, context, core})
+            await script({github})
 ```
 
 Sample content of `package-policy-allow.json`
@@ -59,8 +59,7 @@ Sample content of `package-policy-allow.json`
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.x",
     "native-keymap": "2.1.2",
-    "native-watchdog": "1.3.0",
-    ...
+    "native-watchdog": "1.3.0"
 }
 ```
 
