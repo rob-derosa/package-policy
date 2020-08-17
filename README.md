@@ -42,7 +42,7 @@ jobs:
           violations: ${{steps.package-policy.outputs.violations}}
           script: |
             const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/package_violation.js`)
-            await script({github, context, core})
+            await script({github})
 ```
 
 Sample content of `package-policy-allow.json`
@@ -91,7 +91,7 @@ steps:
       violations: ${{steps.package-policy.outputs.violations}}
       script: |
         const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/package_violation.js`)
-        await script({github, context, core})
+        await script({github})
 ```
 
 Here we are executing logic contained in the [.github/workflows/package_violation.js](.github/workflows/package_violation.js) file.
