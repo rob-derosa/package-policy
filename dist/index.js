@@ -529,7 +529,7 @@ function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const args = process.argv.slice(2);
+            //const args = process.argv.slice(2);
             // const policyType = args[0];
             // const policyUrl = args[1]
             // const gitHubToken = args[2];

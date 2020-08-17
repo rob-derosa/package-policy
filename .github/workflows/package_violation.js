@@ -1,14 +1,17 @@
 module.exports = async (gh, context) => {
 
-  console.log("gh");
-  console.log(gh);
+  // console.log("gh");
+  // console.log(gh);
 
-  console.log();
-  console.log();
-  console.log("context");
-  console.log(context);
+  // console.log();
+  // console.log();
+  // console.log("context");
+  // console.log(context);
 
   let violations = gh.core.getInput("violations", {});
+
+  console.log("violations");
+  console.log(violations);
 
   if (!violations || violations.length == 0) {
     console.log("No violations detected.")
