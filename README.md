@@ -44,7 +44,7 @@ jobs:
             await script({github, context, core})
 ```
 
-Sample content of `allow_policy.json`
+#### Sample content of `allow_policy.json`
 ```json
 {
     "applicationinsights": "1.0.8",
