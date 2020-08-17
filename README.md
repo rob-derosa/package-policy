@@ -1,6 +1,6 @@
 # :package: Package Policy Action 
 
-This GitHub action allows you to provide a list of packages allowed or prohibited along with versions to be enforced within this repository. If a code push or pull request contains changes to a `packages.json` manifest file and those changes reference a package that violates the package policy, a `violations` output value is set containing an array of the offending packages in JSON format.
+This GitHub action allows you to provide a list of packages allowed or prohibited along with versions to be enforced within this repository. If a code push or pull request contains changes to a `packages.json` manifest file containing a reference to a package that violates the package policy, a `violations` output value is set containing an array of the offending packages in JSON format.
 
 Versions can be specified as:
 * literal - `1.2.5`
