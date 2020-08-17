@@ -28,7 +28,7 @@
     "@actions/core": "^1.2.4",
     "@actions/github": "^4.0.0",
     "@types/node-fetch": "^2.5.7",
-    "compare-versions": "^3.6.0"
+    "@externaldev/some-neat-package": "^3.6.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
