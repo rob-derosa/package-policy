@@ -37,14 +37,14 @@ module.exports = async (gh) => {
       issue_number: gh.context.payload.pull_request.number
     })
 
-    let issue = await gh.github.issues.createComment({
+    let comment = await gh.github.issues.createComment({
       owner: gh.context.repo.owner,
       repo: gh.context.repo.repo,
       issue_number: gh.context.payload.pull_request.number,
       body: bodyMessage
     })
 
-    console.log(`Pull request labeled and commented - ${issue.data.number} - ${issue.data.html_url}`);
+    console.log(`Pull request labeled and commented - ${comment.data.html_url}`);
   }
 
   gh.core.setFailed("!!! PACKAGE POLICY VIOLATIONS DETECTED !!!");
