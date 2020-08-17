@@ -13,7 +13,7 @@ export interface Package {
 
 async function run(): Promise<void> {
   try {
-    const args = process.argv.slice(2);
+    //const args = process.argv.slice(2);
     // const policyType = args[0];
     // const policyUrl = args[1]
     // const gitHubToken = args[2];

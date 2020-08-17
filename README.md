@@ -36,36 +36,35 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/github-script@v2
         name: "Respond to package violations"
-        id: post-script
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           violations: ${{steps.package-policy.outputs.violations}}
           script: |
             const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/package_violation.js`)
-            await script({github})
+            await script({github, context, core})
 ```
 
-Sample content of `package-policy-allow.json`
+Sample content of `allow_policy.json`
 ```json
 {
     "applicationinsights": "1.0.8",
     "chokidar": "*",
     "graceful-fs": "*",
-    "http-proxy-agent": "^2.1.*0*",
-    "https-proxy-agent": "^2.2.3",
+    "http-proxy-agent": "^2.1.*",
+    "https-proxy-agent": "^2.*",
     "iconv-lite-umd": "~0.6.8",
     "jschardet": "*",
     "keytar": "*",
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.x",
     "native-keymap": "2.1.2",
-    "native-watchdog": "1.3.0"
+    "native-watchdog": "1.3.*"
 }
 ```
 
 ## :pencil: Configuration
 
-The following inputs are required:
+The following inputs are accepted:
 
 - `policy`: Provide either `allow` to treat the policy as an allow list or `prohibit` to treat it as a prohibit list
 - `policy-url`: The remote URL of the policy.json file containing a list of packages and versions allowed or prohibited ([see sample payload](#sample-content-of-package-policy-allowjson))
@@ -73,7 +72,7 @@ The following inputs are required:
 - `github-token`: leave this be :metal: - needed to access the added or modified files
 
 
-## :no_entry: Responding to Violations
+## :warning: Responding to Violations
 
 Note that this action only checks to see if package violations are detected and writes that data to the `violations` output. In this sample,
 we use a downstream action to respond to any violations that occur. By using the `actions/github-script@v2` action, we can execute
@@ -84,13 +83,12 @@ steps:
   ...
   - uses: actions/github-script@v2
     name: "Respond to package violations"
-    id: post-script
     with:
       github-token: ${{secrets.GITHUB_TOKEN}}
       violations: ${{steps.package-policy.outputs.violations}}
       script: |
         const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/package_violation.js`)
-        await script({github})
+        await script({github, context, core})
 ```
 
 Here we are executing logic contained in the [.github/workflows/package_violation.js](.github/workflows/package_violation.js) file.
@@ -100,7 +98,7 @@ If a a violation occurs:
 * triggered by pull request being opened or updated
   * the pull request will be labeled with `Package Violation` and a comment is added with violation details
 
-Keeping the response to the violations in a separate step but in a Javascript file allows for maximum flexibility on how
+Keeping the response to the violations in a separate step and that logic in a Javascript file allows for maximum flexibility on how
 you choose to respond while still providing access to context, core, octokit and io.
 
 
@@ -115,15 +113,15 @@ you choose to respond while still providing access to context, core, octokit and
 
 ### Limitations
 
-* Only supports the one `package.json` manifest file currently
-* Only supports Javascript and Typescript projects currently
-* Only looks in the `dependencies` node in the `package.json` file
+* supports the one `package.json` manifest file currently
+* supports Javascript and Typescript projects currently
+* looks in the `dependencies` node in the `package.json` file (does not look in `devDependencies`)
 
 ### Improvements
 
 * support multiple package manifest files for repos with several projects
 * provide support for other frameworks (.NET, Ruby, Java, Go)
-* provide support for ignore path filters to allow ignoring specific package manifest files (i.e. backup, etc)
+* provide support for ignore path filters to allow ignoring specific package manifest files (i.e. backups)
 
 ### License
 

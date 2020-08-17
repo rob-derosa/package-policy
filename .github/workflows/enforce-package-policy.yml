@@ -20,10 +20,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/github-script@v2
         name: "Respond to package violations"
-        id: post-script
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           violations: ${{steps.package-policy.outputs.violations}}
           script: |
             const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/package_violation.js`)
-            await script({github})
+            await script({github, context, core})
