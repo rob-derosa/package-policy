@@ -59,8 +59,7 @@ Sample content of `package-policy-allow.json`
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.x",
     "native-keymap": "2.1.2",
-    "native-watchdog": "1.3.0",
-    ...
+    "native-watchdog": "1.3.0"
 }
 ```
 
