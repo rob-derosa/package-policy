@@ -67,7 +67,7 @@ jobs:
 The following inputs are accepted:
 
 - `policy`: Provide either `allow` to treat the policy as an allow list or `prohibit` to treat it as a prohibit list
-- `policy-url`: The remote URL of the policy.json file containing a list of packages and versions allowed or prohibited ([see sample payload](#sample-content-of-package-policy-allowjson))
+- `policy-url`: The remote URL of the policy.json file containing a list of packages and versions allowed or prohibited ([see sample payload](##sample-content-of-allow_policyjson))
 - `fail-if-violations`: set to false if you want this action to refrain from setting the status of this action to **fail** - this allows downstream actions to run
 - `github-token`: leave this be :metal: - needed to access the added or modified files
 
