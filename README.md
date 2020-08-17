@@ -120,6 +120,7 @@ you choose to respond while still providing access to context, core, octokit and
 ### Improvements
 
 * support multiple package manifest files for repos with several projects
+* support enforcing packages in `devDependencies` - optionally set via input parameter 
 * provide support for other frameworks (.NET, Ruby, Java, Go)
 * provide support for ignore path filters to allow ignoring specific package manifest files (i.e. backups)
 
