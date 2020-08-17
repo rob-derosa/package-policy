@@ -113,9 +113,9 @@ you choose to respond while still providing access to context, core, octokit and
 
 ### Limitations
 
-* supports the one `package.json` manifest file currently
+* supports the one `packages.json` manifest file currently
 * supports Javascript and Typescript projects currently
-* looks in the `dependencies` node in the `package.json` file (does not look in `devDependencies`)
+* looks in the `dependencies` node in the `packages.json` file (does not look in `devDependencies`)
 
 ### Improvements
 
