@@ -540,6 +540,7 @@ function run() {
             const policyUrl = core.getInput("policy-url", { required: true });
             const gitHubToken = core.getInput("github-token", { required: true });
             const failIfViolations = core.getInput("fail-if-violations", { required: false }) == "true";
+            const includeDevDependencies = core.getInput("include-dev-dependencies", { required: false }) == "true";
             const client = github.getOctokit(gitHubToken);
             //get all the modified or added files in the commits
             let allFiles = [];
@@ -561,10 +562,10 @@ function run() {
                 var f = yield ghf.getFilesInCommit(commits[index], core.getInput('github-token'));
                 allFiles = allFiles.concat(f);
             }
-            console.log("FILES ADDED or MODIFIED");
-            allFiles.forEach((f) => {
-                console.log(f);
-            });
+            // console.log("FILES ADDED or MODIFIED")
+            // allFiles.forEach((f: string) => {
+            //   console.log(f);
+            // });
             if (!policyType || (policyType != "allow" && policyType != "prohibit"))
                 throw new Error("policy must be set to 'allow' or 'prohibit'");
             if (!policyUrl)
@@ -575,7 +576,7 @@ function run() {
             let manifests = new Array();
             allFiles.forEach((file) => {
                 var p = path_1.default.parse(file.toLowerCase());
-                console.log(p);
+                //console.log(p);
                 if (p.base == "package.json") {
                     manifests.push({ filePath: file.toLowerCase(), packages: new Array() });
                 }
@@ -628,6 +629,18 @@ function run() {
                             version: val
                         });
                     });
+                    if (includeDevDependencies) {
+                        Object.entries(parsed.devDependencies).forEach(([key, value]) => {
+                            let val = value;
+                            if (val.startsWith("^") || val.startsWith("~")) {
+                                val = val.substring(1);
+                            }
+                            referencedPackages.push({
+                                name: key,
+                                version: val
+                            });
+                        });
+                    }
                 }
                 catch (error) {
                     console.log(error);

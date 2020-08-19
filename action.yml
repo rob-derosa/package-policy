@@ -15,6 +15,10 @@ inputs:
     required: false
     default: 'true'
     description: 'True to set the status of the action to Failed if violations occur. Set to false to allow downstream packages to execute. Defaults to true.'
+  include-dev-dependencies:
+    required: false
+    default: 'false'
+    description: 'True to enforce the policy against packages in the `devDependencies` node. Defaults to false.'
   github-token:
     required: true
     description: 'Your GitHub token to access the files in the commits tied to the push or puill request.'
