@@ -576,7 +576,7 @@ function run() {
             allFiles.forEach((file) => {
                 var p = path_1.default.parse(file.toLowerCase());
                 console.log(p);
-                if (p.name == "package.json") {
+                if (p.base == "package.json") {
                     manifests.push({ filePath: file.toLowerCase(), packages: new Array() });
                 }
             });

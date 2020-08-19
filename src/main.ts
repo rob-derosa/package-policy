@@ -76,7 +76,7 @@ async function run(): Promise<void> {
     allFiles.forEach((file) => {
       var p = path.parse(file.toLowerCase());
       console.log(p);
-      if (p.name == "package.json") {
+      if (p.base == "package.json") {
         manifests.push({ filePath: file.toLowerCase(), packages: new Array<Package>() });
       }
     });
