@@ -1,8 +1,14 @@
 # :package: Package Policy Action 
 
-This GitHub action allows you to provide a list of packages allowed or prohibited along with versions to be enforced within this repository. If a code push or pull request contains changes to a `packages.json` manifest file containing a reference to a package that violates the package policy, a `violations` output value is set containing an array of the offending packages in JSON format.
+This GitHub action allows you to provide a list of packages allowed or prohibited along with versions to be enforced within this repository. If a code push or pull request contains changes to a `package.json` manifest file containing a reference to a package that violates the package policy, a `violations` output value is set containing an array of the offending packages in JSON format.
 
-Versions can be specified as:
+**Why enforce dependencies?**
+* internal security analysis by SecOps
+* licensing restrictions
+* centralization around standard libraries
+
+
+**Versions can be specified as:**
 * literal - `1.2.5`
 * any version - `*`
 * specific to major and/or minor - `1.2.*`
@@ -44,7 +50,7 @@ jobs:
             await script({github, context, core})
 ```
 
-Sample content of `allow_policy.json`
+#### Sample content of `allow_policy.json`
 ```json
 {
     "applicationinsights": "1.0.8",
@@ -67,7 +73,7 @@ Sample content of `allow_policy.json`
 The following inputs are accepted:
 
 - `policy`: Provide either `allow` to treat the policy as an allow list or `prohibit` to treat it as a prohibit list
-- `policy-url`: The remote URL of the policy.json file containing a list of packages and versions allowed or prohibited ([see sample payload](#sample-content-of-package-policy-allowjson))
+- `policy-url`: The remote URL of the policy.json file containing a list of packages and versions allowed or prohibited ([see sample payload](#sample-content-of-allow_policyjson))
 - `fail-if-violations`: set to false if you want this action to refrain from setting the status of this action to **fail** - this allows downstream actions to run
 - `github-token`: leave this be :metal: - needed to access the added or modified files
 
@@ -104,7 +110,7 @@ you choose to respond while still providing access to context, core, octokit and
 
 ## :boom: In Action
 
-**A commit was made that included an update to the packages.json manifest file.**
+**A commit was made that included an update to the package.json manifest file.**
 ![Action Console Log](assets/action_log.png?raw=true)
 
 **Because a violation was detected, a comment is added to the pull request and labeled. If triggered by a code push, a new issue is created and assigned to the user who pushed the code.**
@@ -113,13 +119,10 @@ you choose to respond while still providing access to context, core, octokit and
 
 ### Limitations
 
-* supports the one `package.json` manifest file currently
 * supports Javascript and Typescript projects currently
-* looks in the `dependencies` node in the `package.json` file (does not look in `devDependencies`)
 
 ### Improvements
 
-* support multiple package manifest files for repos with several projects
 * provide support for other frameworks (.NET, Ruby, Java, Go)
 * provide support for ignore path filters to allow ignoring specific package manifest files (i.e. backups)
 

@@ -1,4 +1,4 @@
-module.exports = async (gh, context) => {
+module.exports = async (gh) => {
 
   let violations = gh.core.getInput("violations", {});
 
@@ -13,25 +13,31 @@ module.exports = async (gh, context) => {
     "The following referenced package(s) violate the package policy put in place by the administrator of this repository:\n";
 
   packages.forEach((item) => {
-    bodyMessage += `\n- [ ] :x: ${item.name} - ${item.version}`;
+    bodyMessage += `\n\n:x: ${item.filePath}`;
+    item.packages.forEach((package) => {
+      bodyMessage += `\n- [ ] ${package.name} : ${package.version}`;
+    });
+
+    bodyMessage += "\n";
   });
+
   bodyMessage += "\n\nPlease choose alternate packages that conform to the package policy and re-attempt."
 
   if (gh.context.eventName == "push") {
     let issue = await gh.github.issues.create({
       owner: gh.context.repo.owner,
       repo: gh.context.repo.repo,
-      title: "Package Violation Detected!!",
+      title: "Package Policy Violation Detected!!",
       assignee: gh.context.payload.pusher.name,
       body: bodyMessage,
-      labels: ["Package Violation"],
+      labels: ["Package Policy Violation"],
     });
 
     console.log(`Issue created - ${issue.data.number} - ${issue.data.html_url}`);
   } else {
 
     await gh.github.issues.addLabels({
-      labels: ["Package Violation"],
+      labels: ["Package Policy Violation"],
       owner: gh.context.repo.owner,
       repo: gh.context.repo.repo,
       issue_number: gh.context.payload.pull_request.number

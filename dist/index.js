@@ -525,25 +525,25 @@ const node_fetch_1 = __importDefault(__webpack_require__(454));
 const fs_1 = __importDefault(__webpack_require__(747));
 const ghf = __importStar(__webpack_require__(232));
 const compare_versions_1 = __importDefault(__webpack_require__(247));
+const path_1 = __importDefault(__webpack_require__(622));
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const line = "-------------------------------------------";
             //const args = process.argv.slice(2);
             // const policyType = args[0];
             // const policyUrl = args[1]
             // const gitHubToken = args[2];
-            // const addedFiles = args[3];
-            // const changedFiles = args[4];
-            // let doc = yaml.safeLoad(fs.readFileSync("action.yml", "utf-8"));
-            // console.log(doc);
+            //const failIfViolations = false;
             const policyType = core.getInput("policy", { required: true });
             const policyUrl = core.getInput("policy-url", { required: true });
             const gitHubToken = core.getInput("github-token", { required: true });
             const failIfViolations = core.getInput("fail-if-violations", { required: false }) == "true";
+            const includeDevDependencies = core.getInput("include-dev-dependencies", { required: false }) == "true";
             const client = github.getOctokit(gitHubToken);
             //get all the modified or added files in the commits
-            let allFiles = [];
+            let allFiles = new Set();
             let commits;
             switch (github.context.eventName) {
                 case "pull_request":
@@ -560,7 +560,7 @@ function run() {
             commits = commits.filter((c) => !c.parents || 1 === c.parents.length);
             for (let index = 0; index < commits.length; index++) {
                 var f = yield ghf.getFilesInCommit(commits[index], core.getInput('github-token'));
-                allFiles = allFiles.concat(f);
+                f.forEach(element => allFiles.add(element));
             }
             // console.log("FILES ADDED or MODIFIED")
             // allFiles.forEach((f: string) => {
@@ -570,42 +570,21 @@ function run() {
                 throw new Error("policy must be set to 'allow' or 'prohibit'");
             if (!policyUrl)
                 throw new Error("policy-url not set");
-            let referencedPackages = new Array();
             let packagePolicyList = new Array();
             let packageViolations = new Array();
             //Look to see if the package.json manifest was updated or added
-            let manifestFilePath;
+            let manifests = new Array();
             allFiles.forEach((file) => {
-                if (file.endsWith("package.json")) {
-                    manifestFilePath = file;
-                    return;
+                var p = path_1.default.parse(file.toLowerCase());
+                //console.log(p);
+                if (p.base == "package.json") {
+                    manifests.push({ filePath: file.toLowerCase(), packages: new Array() });
                 }
             });
             //No manifest updates - bye!
-            if (!manifestFilePath) {
+            if (manifests.length == 0) {
                 console.log("No package updates detected.");
                 return;
-            }
-            let content = fs_1.default.readFileSync(manifestFilePath, 'utf8');
-            let parsed;
-            try {
-                parsed = JSON.parse(content);
-                //Load up the referenced dependencies
-                Object.entries(parsed.dependencies).forEach(([key, value]) => {
-                    let val = value;
-                    if (val.startsWith("^") || val.startsWith("~")) {
-                        val = val.substring(1);
-                    }
-                    referencedPackages.push({
-                        name: key,
-                        version: val
-                    });
-                });
-            }
-            catch (error) {
-                console.log(error);
-                core.debug(error.message);
-                core.setFailed("Unable to parse the package.json manifest file - please ensure it's formatted properly.");
             }
             //Load up the remote policy list
             yield node_fetch_1.default(policyUrl)
@@ -624,48 +603,89 @@ function run() {
                     });
                 });
             });
-            referencedPackages.forEach((referenced) => {
-                let match = packagePolicyList.find(policy => policy.name === referenced.name &&
-                    (policy.version === "*" || compare_versions_1.default(policy.version, referenced.version) == 0));
-                if (policyType == "allow") {
-                    if (!match) {
-                        packageViolations.push(referenced);
-                    }
-                }
-                else if (policyType == "prohibit") {
-                    if (match) {
-                        packageViolations.push(referenced);
-                    }
-                }
-            });
-            client.issues.createComment;
-            console.log("\nREFERENCED PACKAGE LIST");
-            console.log("---------------------------");
-            referencedPackages.forEach((item) => {
-                console.log(`${item.name} - ${item.version}`);
-            });
             console.log("\nPACKAGE POLICY LIST");
             console.log("---------------------------");
             packagePolicyList.forEach((item) => {
                 console.log(`${item.name} - ${item.version}`);
             });
-            if (packageViolations.length > 0) {
-                console.log("\n");
-                let failMessage = "!!! PACKAGE POLICY VIOLATIONS DETECTED !!!";
-                if (failIfViolations) {
-                    core.setFailed(failMessage);
+            //iterate through all the manifest files found
+            manifests.forEach(pm => {
+                console.log(`\nEvaluating '${pm.filePath}'`);
+                console.log(line);
+                let violation = { filePath: pm.filePath, packages: Array() };
+                let content = fs_1.default.readFileSync(pm.filePath, 'utf8');
+                let parsed;
+                let referencedPackages = new Array();
+                try {
+                    parsed = JSON.parse(content);
+                    //Load up the referenced dependencies
+                    Object.entries(parsed.dependencies).forEach(([key, value]) => {
+                        let val = value;
+                        if (val.startsWith("^") || val.startsWith("~")) {
+                            val = val.substring(1);
+                        }
+                        referencedPackages.push({
+                            name: key,
+                            version: val
+                        });
+                    });
+                    if (includeDevDependencies) {
+                        Object.entries(parsed.devDependencies).forEach(([key, value]) => {
+                            let val = value;
+                            if (val.startsWith("^") || val.startsWith("~")) {
+                                val = val.substring(1);
+                            }
+                            referencedPackages.push({
+                                name: key,
+                                version: val
+                            });
+                        });
+                    }
+                }
+                catch (error) {
+                    console.log(error);
+                    core.debug(error.message);
+                    core.setFailed("Unable to parse the package.json manifest file - please ensure it's formatted properly.");
+                }
+                referencedPackages.forEach((referenced) => {
+                    let match = packagePolicyList.find(policy => policy.name === referenced.name &&
+                        (policy.version === "*" || compare_versions_1.default(policy.version, referenced.version) == 0));
+                    if (policyType == "allow") {
+                        if (!match) {
+                            violation.packages.push(referenced);
+                        }
+                    }
+                    else if (policyType == "prohibit") {
+                        if (match) {
+                            violation.packages.push(referenced);
+                        }
+                    }
+                });
+                if (violation.packages.length > 0) {
+                    packageViolations.push(violation);
                 }
                 else {
-                    console.log(failMessage);
+                    console.log("\nNo violations detected");
                 }
+            });
+            if (packageViolations.length > 0) {
                 core.setOutput("violations", packageViolations);
+                console.log("\n!!! PACKAGE POLICY VIOLATIONS DETECTED !!!");
+                console.log(line);
+                packageViolations.forEach(pm => {
+                    console.log(`Package Manifest: ${pm.filePath}`);
+                    pm.packages.forEach(pk => {
+                        console.log(` - ${pk.name} : ${pk.version}`);
+                    });
+                    console.log();
+                });
+                if (failIfViolations) {
+                    core.setFailed("!!! PACKAGE POLICY VIOLATIONS DETECTED !!!");
+                }
             }
             else {
-                console.log("\nAll pacakges referenced conform to the policy provided.");
+                console.log("\nAll package manifest files reference packages that conform to the policy provided.");
             }
-            packageViolations.forEach((item) => {
-                console.log(`${item.name} - ${item.version}`);
-            });
         }
         catch (error) {
             console.log(error);
@@ -725,7 +745,7 @@ function getFilesInCommit(commit, token) {
     return __awaiter(this, void 0, void 0, function* () {
         const repo = github.context.payload.repository;
         const owner = repo === null || repo === void 0 ? void 0 : repo.owner;
-        const FILES = [];
+        const allFiles = [];
         const args = { owner: (owner === null || owner === void 0 ? void 0 : owner.name) || (owner === null || owner === void 0 ? void 0 : owner.login), repo: repo === null || repo === void 0 ? void 0 : repo.name };
         args.ref = commit.id || commit.sha;
         const client = github.getOctokit(token);
@@ -739,9 +759,9 @@ function getFilesInCommit(commit, token) {
             files
                 .filter(file => file.status == "modified" || file.status == "added")
                 .map(file => file.filename)
-                .forEach(filename => FILES.push(filename));
+                .forEach(filename => allFiles.push(filename));
         }
-        return FILES;
+        return allFiles;
     });
 }
 exports.getFilesInCommit = getFilesInCommit;
