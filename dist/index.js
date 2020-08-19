@@ -543,7 +543,7 @@ function run() {
             const includeDevDependencies = core.getInput("include-dev-dependencies", { required: false }) == "true";
             const client = github.getOctokit(gitHubToken);
             //get all the modified or added files in the commits
-            let allFiles = [];
+            let allFiles = new Set();
             let commits;
             switch (github.context.eventName) {
                 case "pull_request":
@@ -560,7 +560,7 @@ function run() {
             commits = commits.filter((c) => !c.parents || 1 === c.parents.length);
             for (let index = 0; index < commits.length; index++) {
                 var f = yield ghf.getFilesInCommit(commits[index], core.getInput('github-token'));
-                allFiles = allFiles.concat(f);
+                f.forEach(element => allFiles.add(element));
             }
             // console.log("FILES ADDED or MODIFIED")
             // allFiles.forEach((f: string) => {
@@ -745,7 +745,7 @@ function getFilesInCommit(commit, token) {
     return __awaiter(this, void 0, void 0, function* () {
         const repo = github.context.payload.repository;
         const owner = repo === null || repo === void 0 ? void 0 : repo.owner;
-        const FILES = [];
+        const allFiles = [];
         const args = { owner: (owner === null || owner === void 0 ? void 0 : owner.name) || (owner === null || owner === void 0 ? void 0 : owner.login), repo: repo === null || repo === void 0 ? void 0 : repo.name };
         args.ref = commit.id || commit.sha;
         const client = github.getOctokit(token);
@@ -759,9 +759,9 @@ function getFilesInCommit(commit, token) {
             files
                 .filter(file => file.status == "modified" || file.status == "added")
                 .map(file => file.filename)
-                .forEach(filename => FILES.push(filename));
+                .forEach(filename => allFiles.push(filename));
         }
-        return FILES;
+        return allFiles;
     });
 }
 exports.getFilesInCommit = getFilesInCommit;
