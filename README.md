@@ -1,6 +1,6 @@
 # :package: Package Policy Action 
 
-This GitHub action allows you to provide a list of packages allowed or prohibited along with versions to be enforced within this repository. If a code push or pull request contains changes to a `packages.json` manifest file containing a reference to a package that violates the package policy, a `violations` output value is set containing an array of the offending packages in JSON format.
+This GitHub action allows you to provide a list of packages allowed or prohibited along with versions to be enforced within this repository. If a code push or pull request contains changes to a `package.json` manifest file containing a reference to a package that violates the package policy, a `violations` output value is set containing an array of the offending packages in JSON format.
 
 **Why enforce dependencies?**
 * internal security analysis by SecOps
@@ -110,7 +110,7 @@ you choose to respond while still providing access to context, core, octokit and
 
 ## :boom: In Action
 
-**A commit was made that included an update to the packages.json manifest file.**
+**A commit was made that included an update to the package.json manifest file.**
 ![Action Console Log](assets/action_log.png?raw=true)
 
 **Because a violation was detected, a comment is added to the pull request and labeled. If triggered by a code push, a new issue is created and assigned to the user who pushed the code.**
@@ -119,9 +119,9 @@ you choose to respond while still providing access to context, core, octokit and
 
 ### Limitations
 
-* supports the one `packages.json` manifest file currently
+* supports the one `package.json` manifest file currently
 * supports Javascript and Typescript projects currently
-* looks in the `dependencies` node in the `packages.json` file (does not look in `devDependencies`)
+* looks in the `dependencies` node in the `package.json` file (does not look in `devDependencies`)
 
 ### Improvements
 

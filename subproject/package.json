@@ -28,7 +28,8 @@
     "@actions/core": "^1.2.4",
     "@actions/github": "^4.0.0",
     "@types/node-fetch": "^2.5.7",
-    "compare-versions": "^3.6.0"
+    "@untrusted-dev/cool-package": "^3.6.0",
+    "@outdated/stale-package": "4.6.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
