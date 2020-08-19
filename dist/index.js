@@ -561,10 +561,10 @@ function run() {
                 var f = yield ghf.getFilesInCommit(commits[index], core.getInput('github-token'));
                 allFiles = allFiles.concat(f);
             }
-            // console.log("FILES ADDED or MODIFIED")
-            // allFiles.forEach((f: string) => {
-            //   console.log(f);
-            // });
+            console.log("FILES ADDED or MODIFIED");
+            allFiles.forEach((f) => {
+                console.log(f);
+            });
             if (!policyType || (policyType != "allow" && policyType != "prohibit"))
                 throw new Error("policy must be set to 'allow' or 'prohibit'");
             if (!policyUrl)
@@ -575,6 +575,7 @@ function run() {
             let manifests = new Array();
             allFiles.forEach((file) => {
                 var p = path_1.default.parse(file.toLowerCase());
+                console.log(p);
                 if (p.name == "package.json") {
                     manifests.push({ filePath: file.toLowerCase(), packages: new Array() });
                 }

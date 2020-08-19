@@ -56,10 +56,10 @@ async function run(): Promise<void> {
       allFiles = allFiles.concat(f);
     }
 
-    // console.log("FILES ADDED or MODIFIED")
-    // allFiles.forEach((f: string) => {
-    //   console.log(f);
-    // });
+    console.log("FILES ADDED or MODIFIED")
+    allFiles.forEach((f: string) => {
+      console.log(f);
+    });
 
     if (!policyType || (policyType != "allow" && policyType != "prohibit"))
       throw new Error("policy must be set to 'allow' or 'prohibit'");
@@ -75,6 +75,7 @@ async function run(): Promise<void> {
 
     allFiles.forEach((file) => {
       var p = path.parse(file.toLowerCase());
+      console.log(p);
       if (p.name == "package.json") {
         manifests.push({ filePath: file.toLowerCase(), packages: new Array<Package>() });
       }
