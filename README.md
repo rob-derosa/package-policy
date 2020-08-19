@@ -13,7 +13,7 @@ This GitHub action allows you to provide a list of packages allowed or prohibite
 * any version - `*`
 * specific to major and/or minor - `1.2.*`
 
-:bath: Versions are sanitized of any non-numeric characters (`^`, `~`, `v`) before comparison
+:shower: Versions are sanitized of any non-numeric characters (`^`, `~`, `v`) before comparison
 
 ## :dart: Usage
 
